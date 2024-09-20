@@ -1,0 +1,11 @@
+.tiptap {
+  :first-child {
+    margin-top: 0;
+  }
+
+  padding: 1rem;
+
+  p {
+    margin: 10px 0;
+  }
+}
