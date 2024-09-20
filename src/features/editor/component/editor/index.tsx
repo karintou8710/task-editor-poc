@@ -7,6 +7,7 @@ import "./index.css";
 import Task from "../../extensions/task";
 import History from "@tiptap/extension-history";
 import Heading from "@tiptap/extension-heading";
+import ResetNode from "../../extensions/reset-node";
 
 const extensions = [
   Document,
@@ -17,6 +18,7 @@ const extensions = [
   Heading.configure({
     levels: [1, 2, 3],
   }),
+  ResetNode,
 ];
 
 const content = `
