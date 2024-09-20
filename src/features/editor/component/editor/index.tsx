@@ -5,8 +5,9 @@ import { EditorContent, useEditor } from "@tiptap/react";
 
 import "./index.css";
 import Task from "../../extensions/task";
+import History from "@tiptap/extension-history";
 
-const extensions = [Document, Paragraph, Text, Task];
+const extensions = [Document, Paragraph, Text, Task, History];
 
 const content = `
   <react-task>Task1</react-task>
