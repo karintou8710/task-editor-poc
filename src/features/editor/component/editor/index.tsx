@@ -8,6 +8,7 @@ import Task from "../../extensions/task";
 import History from "@tiptap/extension-history";
 import Heading from "@tiptap/extension-heading";
 import ResetNode from "../../extensions/reset-node";
+import useLocalContent, { setContent } from "../../hooks/useLocalContent";
 
 const extensions = [
   Document,
@@ -21,14 +22,14 @@ const extensions = [
   ResetNode,
 ];
 
-const content = `
-  <react-task>Task1</react-task>
-`;
-
 export default function Editor() {
+  const content = useLocalContent();
   const editor = useEditor({
     extensions,
     content,
+    onUpdate({ editor }) {
+      setContent(editor.getHTML());
+    },
   });
 
   return (
