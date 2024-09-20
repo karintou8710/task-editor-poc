@@ -4,11 +4,12 @@ import Text from "@tiptap/extension-text";
 import { EditorContent, useEditor } from "@tiptap/react";
 
 import "./index.css";
+import Task from "../../extensions/task";
 
-const extensions = [Document, Paragraph, Text];
+const extensions = [Document, Paragraph, Text, Task];
 
 const content = `
-  <p>Text</p>
+  <react-task>Task1</react-task>
 `;
 
 export default function Editor() {
