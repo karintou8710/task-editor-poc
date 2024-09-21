@@ -10,6 +10,8 @@ import Heading from "@tiptap/extension-heading";
 import ResetNode from "../../extensions/reset-node";
 import useLocalContent, { setContent } from "../../hooks/useLocalContent";
 import Placeholder from "@tiptap/extension-placeholder";
+import Menu from "../menu";
+import UniqueId from "../../extensions/unique-id";
 
 const extensions = [
   Document,
@@ -30,6 +32,7 @@ const extensions = [
       return "ここにタスクを入力してください";
     },
   }),
+  UniqueId,
 ];
 
 export default function Editor() {
@@ -42,8 +45,11 @@ export default function Editor() {
     },
   });
 
+  if (!editor) return null;
+
   return (
     <div className="max-w-[720px] mx-auto">
+      <Menu editor={editor} />
       <EditorContent editor={editor} />
     </div>
   );
