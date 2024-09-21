@@ -9,6 +9,7 @@ import History from "@tiptap/extension-history";
 import Heading from "@tiptap/extension-heading";
 import ResetNode from "../../extensions/reset-node";
 import useLocalContent, { setContent } from "../../hooks/useLocalContent";
+import Placeholder from "@tiptap/extension-placeholder";
 
 const extensions = [
   Document,
@@ -20,6 +21,15 @@ const extensions = [
     levels: [1, 2, 3],
   }),
   ResetNode,
+  Placeholder.configure({
+    placeholder: ({ node }) => {
+      if (node.type.name === "heading") {
+        return "タスクカテゴリを入力してください";
+      }
+
+      return "ここにタスクを入力してください";
+    },
+  }),
 ];
 
 export default function Editor() {
