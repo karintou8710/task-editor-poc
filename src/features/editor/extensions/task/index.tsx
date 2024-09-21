@@ -11,6 +11,21 @@ const Task = Node.create({
   group: "block",
   content: "inline*",
 
+  addAttributes() {
+    return {
+      checked: {
+        default: false,
+        parseHTML: (element) =>
+          element.getAttribute("data-checked") === "true" ? true : false,
+        renderHTML: (attributes) => {
+          return {
+            "data-checked": attributes.checked,
+          };
+        },
+      },
+    };
+  },
+
   parseHTML() {
     return [
       {

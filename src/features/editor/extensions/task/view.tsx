@@ -1,16 +1,6 @@
 import { NodeViewContent, NodeViewProps, NodeViewWrapper } from "@tiptap/react";
 
-export default function TaskView({
-  editor,
-  getPos,
-  deleteNode,
-}: NodeViewProps) {
-  const onDone = () => {
-    const pos = getPos();
-    deleteNode();
-    editor.chain().focus().setTextSelection(pos).run();
-  };
-
+export default function TaskView({ node, updateAttributes }: NodeViewProps) {
   return (
     <NodeViewWrapper className="items-center my-4 relative">
       <div
@@ -18,15 +8,21 @@ export default function TaskView({
         suppressContentEditableWarning
         className="h-6 absolute"
       >
-        <button
-          onClick={onDone}
+        <input
+          type="checkbox"
+          onChange={(e) => {
+            updateAttributes({ checked: e.target.checked });
+          }}
+          value={node.attrs.checked}
           className="size-6 border border-black flex justify-center items-center hover:bg-gray-200"
-        >
-          d
-        </button>
+        />
       </div>
 
-      <NodeViewContent className="ml-8 leading-6" />
+      <NodeViewContent
+        className={`ml-8 leading-6 ${
+          node.attrs.checked ? "text-gray-500 line-through" : ""
+        }`}
+      />
     </NodeViewWrapper>
   );
 }
