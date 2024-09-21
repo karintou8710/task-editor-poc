@@ -13,7 +13,7 @@ export default function TaskView({ node, updateAttributes }: NodeViewProps) {
           onChange={(e) => {
             updateAttributes({ checked: e.target.checked });
           }}
-          value={node.attrs.checked}
+          checked={node.attrs.checked}
           className="size-6 border border-black flex justify-center items-center hover:bg-gray-200"
         />
       </div>
