@@ -3,6 +3,10 @@
     margin-top: 0;
   }
 
+  &:focus {
+    outline: none;
+  }
+
   padding: 1rem;
 
   p,
