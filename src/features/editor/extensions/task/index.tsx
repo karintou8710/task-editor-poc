@@ -32,6 +32,15 @@ const Task = Node.create({
           };
         },
       },
+      deadline: {
+        default: null,
+        parseHTML: (element) => element.getAttribute("data-deadline"),
+        renderHTML: (attributes) => {
+          return {
+            "data-deadline": attributes.deadline,
+          };
+        },
+      },
     };
   },
 
