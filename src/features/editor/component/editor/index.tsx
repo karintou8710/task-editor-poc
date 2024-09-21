@@ -27,9 +27,11 @@ const extensions = [
     placeholder: ({ node }) => {
       if (node.type.name === "heading") {
         return "タスクカテゴリを入力してください";
+      } else if (node.type.name === "paragraph") {
+        return "ここにタスクを入力してください";
       }
 
-      return "ここにタスクを入力してください";
+      return "";
     },
   }),
   UniqueId,
