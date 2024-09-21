@@ -1,10 +1,19 @@
 import {
+  findChildren,
   mergeAttributes,
   Node,
   ReactNodeViewRenderer,
   textblockTypeInputRule,
 } from "@tiptap/react";
 import TaskView from "./view";
+
+declare module "@tiptap/react" {
+  interface Commands<ReturnType> {
+    heading: {
+      deleteCheckedTask: () => ReturnType;
+    };
+  }
+}
 
 const Task = Node.create({
   name: "task",
@@ -49,6 +58,33 @@ const Task = Node.create({
         type: this.type,
       }),
     ];
+  },
+
+  addCommands() {
+    return {
+      deleteCheckedTask:
+        () =>
+        ({ commands, tr }) => {
+          const ids: string[] = findChildren(tr.doc, (node) => {
+            return node.type.name === "task" && node.attrs.checked;
+          }).map((item) => item.node.attrs.uniqueId);
+
+          if (ids.length === 0) return false;
+
+          // deleteRangeの後に、新しい配置になった要素を取得し直すのが肝
+          return commands.forEach(ids, (id, { tr, commands }) => {
+            const item = findChildren(
+              tr.doc,
+              (node) => id === node.attrs.uniqueId
+            )?.[0];
+
+            return commands.deleteRange({
+              from: item.pos,
+              to: item.pos + item.node.nodeSize,
+            });
+          });
+        },
+    };
   },
 });
 
