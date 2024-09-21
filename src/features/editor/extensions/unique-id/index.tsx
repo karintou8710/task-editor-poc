@@ -22,7 +22,7 @@ const UniqueId = Extension.create({
     return [
       new Plugin({
         key: new PluginKey("unique-id"),
-        appendTransaction(transactions, prevState, nextState) {
+        appendTransaction(transactions, _, nextState) {
           const tr = nextState.tr;
           let modified = false;
           if (transactions.some((transaction) => transaction.docChanged)) {
