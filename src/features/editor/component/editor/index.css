@@ -3,7 +3,7 @@
     outline: none;
   }
 
-  padding: 1rem;
+  padding: 1rem 2rem;
 
   p,
   h1,
@@ -42,5 +42,9 @@
     float: left;
     height: 0;
     pointer-events: none;
+  }
+
+  .ProseMirror-selectednode {
+    @apply outline outline-purple-500 outline-2 outline-offset-2;
   }
 }
