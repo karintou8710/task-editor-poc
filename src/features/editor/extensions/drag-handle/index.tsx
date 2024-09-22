@@ -78,7 +78,7 @@ export default function DragHandle({ editor }: Props) {
   );
 
   useEffect(() => {
-    editor.$doc.element.onmousemove = (ev) => {
+    editor.view.dom.onmousemove = (ev) => {
       const pos = editor.view.posAtCoords({
         left: ev.clientX,
         top: ev.clientY,
@@ -97,7 +97,7 @@ export default function DragHandle({ editor }: Props) {
     };
 
     return () => {
-      editor.$doc.element.onmousemove = null;
+      editor.view.dom.onmousemove = null;
     };
   }, [editor, setTopBlockAtomDragInfo, setTopBlockDragInfo]);
 
