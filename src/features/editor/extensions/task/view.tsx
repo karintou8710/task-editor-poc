@@ -8,7 +8,7 @@ export default function TaskView({ node, updateAttributes }: NodeViewProps) {
   const ref = useRef<HTMLInputElement>(null);
 
   return (
-    <NodeViewWrapper className="items-center my-4 flex">
+    <NodeViewWrapper className="items-center my-5 flex">
       <label
         contentEditable="false"
         suppressContentEditableWarning

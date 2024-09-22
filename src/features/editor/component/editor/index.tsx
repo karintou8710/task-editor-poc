@@ -12,6 +12,8 @@ import useLocalContent, { setContent } from "../../hooks/useLocalContent";
 import Placeholder from "@tiptap/extension-placeholder";
 import Menu from "../menu";
 import UniqueId from "../../extensions/unique-id";
+import DragHandle from "../../extensions/drag-handle";
+import Dropcursor from "@tiptap/extension-dropcursor";
 
 const extensions = [
   Document,
@@ -35,6 +37,7 @@ const extensions = [
     },
   }),
   UniqueId,
+  Dropcursor,
 ];
 
 export default function Editor() {
@@ -52,7 +55,8 @@ export default function Editor() {
   return (
     <div className="max-w-[720px] mx-auto">
       <Menu editor={editor} />
-      <EditorContent editor={editor} />
+      <EditorContent editor={editor} className="px-4 my-6" />
+      <DragHandle editor={editor} />
     </div>
   );
 }
