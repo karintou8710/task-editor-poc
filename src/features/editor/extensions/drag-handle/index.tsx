@@ -38,6 +38,7 @@ export default function DragHandle({ editor }: Props) {
   const setTopBlockDragInfo = useCallback(
     (pos: number) => {
       const $pos = editor.state.doc.resolve(pos);
+
       let node = editor.view.domAtPos($pos.start(1)).node as HTMLElement;
       // nodeViewはコンテンツ箇所のdomを取得してしまうので、親要素を再取得する
       if (node.hasAttribute("data-node-view-content-react")) {
@@ -46,10 +47,7 @@ export default function DragHandle({ editor }: Props) {
 
       setDragInfo({
         dom: node,
-        nodeSelection: NodeSelection.create(
-          editor.state.doc,
-          $pos.start(1) - 1 // nodeSelectionはResolvePos.beforeの値を指定する
-        ),
+        nodeSelection: NodeSelection.create(editor.state.doc, $pos.before(1)),
       });
     },
     [editor]
@@ -62,9 +60,8 @@ export default function DragHandle({ editor }: Props) {
 
       if (dragInfo === null) return;
 
-      ev.dataTransfer?.setDragImage(dragInfo.dom, 0, 0);
+      ev.dataTransfer.setDragImage(dragInfo.dom, 0, 0);
       ev.dataTransfer.effectAllowed = "copyMove";
-
       editor.view.dragging = new Dragging(
         dragInfo.nodeSelection.content(),
         true,
@@ -75,7 +72,7 @@ export default function DragHandle({ editor }: Props) {
   );
 
   useEffect(() => {
-    editor.view.dom.onmousemove = (ev) => {
+    const handleMouseMove = (ev: MouseEvent) => {
       const pos = editor.view.posAtCoords({
         left: ev.clientX,
         top: ev.clientY,
@@ -88,21 +85,28 @@ export default function DragHandle({ editor }: Props) {
         // inside != -1の時、atomではposが上半分と下半分で異なる(pos.insideは同じ)
         setTopBlockAtomDragInfo(pos.inside >= 0 ? pos.inside : pos.pos);
       } else {
-        // inside == -1の時、pos.posは要素の外になるので+1する
-        setTopBlockDragInfo(pos.inside >= 0 ? pos.pos : pos.pos + 1);
+        setTopBlockDragInfo(
+          Math.min(pos.pos, editor.state.doc.content.size - 1)
+        );
       }
     };
 
+    const clearDragInfo = () => {
+      setDragInfo(null);
+    };
+
+    editor.view.dom.addEventListener("mousemove", handleMouseMove);
+    editor.view.dom.addEventListener("keydown", clearDragInfo);
+
     return () => {
-      editor.view.dom.onmousemove = null;
+      editor.view.dom.removeEventListener("mousemove", handleMouseMove);
+      editor.view.dom.removeEventListener("keydown", clearDragInfo);
     };
   }, [editor, setTopBlockAtomDragInfo, setTopBlockDragInfo]);
 
   if (dragInfo === null) return null;
 
   const rect = dragInfo.dom.getBoundingClientRect();
-  const top = rect?.top + window.scrollY;
-  const left = rect?.left + window.scrollX - 40;
 
   return (
     <div
@@ -117,8 +121,8 @@ export default function DragHandle({ editor }: Props) {
           .run()
       }
       style={{
-        top: top,
-        left: left,
+        top: rect.top + window.scrollY,
+        left: rect?.left + window.scrollX - 40,
       }}
     >
       <svg
