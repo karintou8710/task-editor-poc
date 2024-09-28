@@ -1,7 +1,7 @@
 import { Editor } from "@tiptap/react";
 import { DragEvent, useCallback, useEffect, useState } from "react";
 import { NodeSelection } from "@tiptap/pm/state";
-import { Node, Slice } from "@tiptap/pm/model";
+import { Slice } from "@tiptap/pm/model";
 
 import { getRendererNode, isTopBlockAtomNode } from "../../libs/node";
 
@@ -15,7 +15,6 @@ class Dragging {
 
 type DragInfo = {
   dom: HTMLElement;
-  node: Node;
   nodeSelection: NodeSelection;
 };
 
@@ -30,7 +29,6 @@ export default function DragHandle({ editor }: Props) {
     (pos: number) => {
       setDragInfo({
         dom: editor.view.nodeDOM(pos) as HTMLElement,
-        node: editor.state.doc.nodeAt(pos) as Node,
         nodeSelection: NodeSelection.create(editor.state.doc, pos),
       });
     },
@@ -48,7 +46,6 @@ export default function DragHandle({ editor }: Props) {
 
       setDragInfo({
         dom: node,
-        node: $pos.node(1),
         nodeSelection: NodeSelection.create(
           editor.state.doc,
           $pos.start(1) - 1 // nodeSelectionはResolvePos.beforeの値を指定する
