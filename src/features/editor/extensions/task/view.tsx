@@ -1,7 +1,6 @@
 import { NodeViewContent, NodeViewProps, NodeViewWrapper } from "@tiptap/react";
 import clsx from "clsx";
 import { useRef } from "react";
-import { BsCalendarDate } from "react-icons/bs";
 import {
   getDiffDays,
   isBeforeDay,
@@ -10,6 +9,8 @@ import {
   isTomorrow,
   isTowDaysAgo,
 } from "../../libs/date";
+import { twMerge } from "tailwind-merge";
+import { BiCalendarEvent } from "react-icons/bi";
 
 export default function TaskView({ node, updateAttributes }: NodeViewProps) {
   const ref = useRef<HTMLInputElement>(null);
@@ -31,69 +32,66 @@ export default function TaskView({ node, updateAttributes }: NodeViewProps) {
   };
 
   return (
-    <NodeViewWrapper className="items-center my-5 flex">
-      <label
-        contentEditable="false"
-        suppressContentEditableWarning
-        className="h-6 mr-2"
-      >
-        <input
-          type="checkbox"
-          onChange={(e) => {
-            updateAttributes({ checked: e.target.checked });
-          }}
-          checked={node.attrs.checked}
-          className="size-6 border border-black flex-[0_0_auto]"
-        />
-      </label>
+    <NodeViewWrapper className="my-2 pb-1 border-b">
+      <div className="flex">
+        <label
+          contentEditable="false"
+          suppressContentEditableWarning
+          className="h-6 mr-4"
+        >
+          <input
+            type="checkbox"
+            onChange={(e) => {
+              updateAttributes({ checked: e.target.checked });
+            }}
+            checked={node.attrs.checked}
+            className="size-6 border border-black flex-[0_0_auto]"
+          />
+        </label>
+
+        <div className="flex-auto">
+          <NodeViewContent
+            className={clsx(node.attrs.checked && "text-gray-500 line-through")}
+          />
+        </div>
+      </div>
 
       <div
         contentEditable="false"
         suppressContentEditableWarning
-        className="mr-3 flex items-center gap-2"
+        className="flex items-center mt-2 ml-9"
       >
-        <span className="w-[110px] text-center">
-          <span
-            className={clsx(
-              "py-1 px-3 bg-blue-400 text-white text-xs font-bold rounded-full",
-              node.attrs.deadline == null && "bg-gray-200 text-black",
+        <button
+          onClick={() => ref.current?.showPicker()}
+          className={twMerge(
+            clsx(
+              "text-gray-600 text-xs font-bold flex gap-2 items-center",
+              node.attrs.deadline == null && "text-gray-400",
               node.attrs.deadline &&
                 isToday(node.attrs.deadline) &&
-                "bg-orange-400 text-white text-base",
+                " text-orange-400",
               node.attrs.deadline &&
                 isTomorrow(node.attrs.deadline) &&
-                "bg-orange-400 text-white text-base",
-              node.attrs.deadline &&
-                isTowDaysAgo(node.attrs.deadline) &&
-                "text-base",
+                "text-orange-400",
+              node.attrs.deadline && isTowDaysAgo(node.attrs.deadline) && "",
               node.attrs.deadline &&
                 isBeforeDay(node.attrs.deadline) &&
-                "bg-red-400 text-white"
-            )}
-          >
-            {getDeadlineText(node.attrs.deadline)}
-          </span>
-        </span>
-
-        <button onClick={() => ref.current?.showPicker()}>
-          <BsCalendarDate size={16} />
+                "text-red-400"
+            )
+          )}
+        >
+          <BiCalendarEvent size={20} />
+          <span className="pt-0.5">{getDeadlineText(node.attrs.deadline)}</span>
         </button>
+
         <input
           type="date"
           value={node.attrs.deadline ?? ""}
-          className="invisible w-0.5"
+          className="invisible w-0.5 inline"
           onChange={(e) => {
             updateAttributes({ deadline: e.target.value });
           }}
           ref={ref}
-        />
-      </div>
-
-      <div className="flex-auto">
-        <NodeViewContent
-          className={`${
-            node.attrs.checked ? "text-gray-500 line-through" : ""
-          }`}
         />
       </div>
     </NodeViewWrapper>
