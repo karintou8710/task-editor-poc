@@ -1,9 +1,10 @@
 import { Editor } from "@tiptap/react";
-import { DragEvent, useCallback, useEffect, useRef, useState } from "react";
+import { DragEvent, useCallback, useEffect, useRef } from "react";
 import { NodeSelection } from "@tiptap/pm/state";
 import { Slice } from "@tiptap/pm/model";
 
-import { getRendererNode, isTopBlockAtomNode } from "../../libs/node";
+import { isTopBlockAtomNode } from "../../libs/node";
+import useDragInfo from "./hooks/useDragInfo";
 
 class Dragging {
   constructor(
@@ -13,46 +14,13 @@ class Dragging {
   ) {}
 }
 
-type DragInfo = {
-  dom: HTMLElement;
-  nodeSelection: NodeSelection;
-};
-
 type Props = {
   editor: Editor;
 };
 
 export default function DragHandle({ editor }: Props) {
-  const [dragInfo, setDragInfo] = useState<DragInfo | null>(null);
+  const [dragInfo, dragInfoDispatch] = useDragInfo();
   const dragIconRef = useRef<HTMLDivElement>(null);
-
-  const setTopBlockAtomDragInfo = useCallback(
-    (pos: number) => {
-      setDragInfo({
-        dom: editor.view.nodeDOM(pos) as HTMLElement,
-        nodeSelection: NodeSelection.create(editor.state.doc, pos),
-      });
-    },
-    [editor]
-  );
-
-  const setTopBlockDragInfo = useCallback(
-    (pos: number) => {
-      const $pos = editor.state.doc.resolve(pos);
-
-      let node = editor.view.domAtPos($pos.start(1)).node as HTMLElement;
-      // nodeViewはコンテンツ箇所のdomを取得してしまうので、親要素を再取得する
-      if (node.hasAttribute("data-node-view-content-react")) {
-        node = getRendererNode(node);
-      }
-
-      setDragInfo({
-        dom: node,
-        nodeSelection: NodeSelection.create(editor.state.doc, $pos.before(1)),
-      });
-    },
-    [editor]
-  );
 
   const handleDragStart = useCallback(
     (ev: DragEvent) => {
@@ -81,14 +49,18 @@ export default function DragHandle({ editor }: Props) {
       if (!pos) return;
 
       // リーフノードはNodeやDOMの取得方法が通常と異なるので、分けて処理する
-
       if (isTopBlockAtomNode(editor, pos.pos)) {
-        // inside != -1の時、atomではposが上半分と下半分で異なる(pos.insideは同じ)
-        setTopBlockAtomDragInfo(pos.inside >= 0 ? pos.inside : pos.pos);
+        dragInfoDispatch({
+          type: "set-atom-action",
+          editor: editor,
+          pos: pos,
+        });
       } else {
-        setTopBlockDragInfo(
-          Math.min(pos.pos, editor.state.doc.content.size - 1)
-        );
+        dragInfoDispatch({
+          type: "set-block-action",
+          editor: editor,
+          pos: pos,
+        });
       }
     };
 
@@ -96,10 +68,10 @@ export default function DragHandle({ editor }: Props) {
       if (dragIconRef.current?.contains(ev.relatedTarget as HTMLElement)) {
         return;
       }
-      setDragInfo(null);
+      dragInfoDispatch({ type: "clear-action" });
     };
 
-    const handleKeyDown = () => setDragInfo(null);
+    const handleKeyDown = () => dragInfoDispatch({ type: "clear-action" });
 
     editor.view.dom.addEventListener("mousemove", handleMouseMove);
     editor.view.dom.addEventListener("mouseleave", handleMouseLeave);
@@ -110,7 +82,7 @@ export default function DragHandle({ editor }: Props) {
       editor.view.dom.addEventListener("mouseleave", handleMouseLeave);
       editor.view.dom.removeEventListener("keydown", handleKeyDown);
     };
-  }, [editor, setTopBlockAtomDragInfo, setTopBlockDragInfo]);
+  }, [editor, dragInfoDispatch]);
 
   if (dragInfo === null) return null;
 
@@ -128,7 +100,7 @@ export default function DragHandle({ editor }: Props) {
           .setNodeSelection(dragInfo.nodeSelection.from)
           .run()
       }
-      onMouseLeave={() => setDragInfo(null)}
+      onMouseLeave={() => dragInfoDispatch({ type: "clear-action" })}
       style={{
         top: rect.top + window.scrollY,
         left: rect?.left + window.scrollX - 40,
