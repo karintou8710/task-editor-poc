@@ -44,8 +44,6 @@ export default function DragHandle({ editor }: Props) {
 
   if (dragInfo === null) return null;
 
-  const rect = dragInfo.dom.getBoundingClientRect();
-
   return (
     <div
       draggable="true"
@@ -60,8 +58,8 @@ export default function DragHandle({ editor }: Props) {
       }
       onMouseLeave={() => dragInfoDispatch({ type: "clear-action" })}
       style={{
-        top: rect.top + window.scrollY,
-        left: rect?.left + window.scrollX - 40,
+        top: dragInfo.dom.getBoundingClientRect().top + window.scrollY,
+        left: dragInfo.dom.getBoundingClientRect().left + window.scrollX - 40,
       }}
       ref={dragIconRef}
     >
