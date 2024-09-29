@@ -1,5 +1,5 @@
 import { Editor } from "@tiptap/react";
-import { DragEvent, useCallback, useEffect, useState } from "react";
+import { DragEvent, useCallback, useEffect, useRef, useState } from "react";
 import { NodeSelection } from "@tiptap/pm/state";
 import { Slice } from "@tiptap/pm/model";
 
@@ -24,6 +24,7 @@ type Props = {
 
 export default function DragHandle({ editor }: Props) {
   const [dragInfo, setDragInfo] = useState<DragInfo | null>(null);
+  const dragIconRef = useRef<HTMLDivElement>(null);
 
   const setTopBlockAtomDragInfo = useCallback(
     (pos: number) => {
@@ -91,16 +92,23 @@ export default function DragHandle({ editor }: Props) {
       }
     };
 
-    const clearDragInfo = () => {
+    const handleMouseLeave = (ev: MouseEvent) => {
+      if (dragIconRef.current?.contains(ev.relatedTarget as HTMLElement)) {
+        return;
+      }
       setDragInfo(null);
     };
 
+    const handleKeyDown = () => setDragInfo(null);
+
     editor.view.dom.addEventListener("mousemove", handleMouseMove);
-    editor.view.dom.addEventListener("keydown", clearDragInfo);
+    editor.view.dom.addEventListener("mouseleave", handleMouseLeave);
+    editor.view.dom.addEventListener("keydown", handleKeyDown);
 
     return () => {
       editor.view.dom.removeEventListener("mousemove", handleMouseMove);
-      editor.view.dom.removeEventListener("keydown", clearDragInfo);
+      editor.view.dom.addEventListener("mouseleave", handleMouseLeave);
+      editor.view.dom.removeEventListener("keydown", handleKeyDown);
     };
   }, [editor, setTopBlockAtomDragInfo, setTopBlockDragInfo]);
 
@@ -120,10 +128,12 @@ export default function DragHandle({ editor }: Props) {
           .setNodeSelection(dragInfo.nodeSelection.from)
           .run()
       }
+      onMouseLeave={() => setDragInfo(null)}
       style={{
         top: rect.top + window.scrollY,
         left: rect?.left + window.scrollX - 40,
       }}
+      ref={dragIconRef}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
