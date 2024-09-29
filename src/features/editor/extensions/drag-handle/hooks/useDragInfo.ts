@@ -64,7 +64,7 @@ function reducer(state: DragInfoState, action: DragInfoAction): DragInfoState {
     };
   }
 
-  return null;
+  return state;
 }
 
 export default function useDragInfo() {
