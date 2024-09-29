@@ -1,10 +1,10 @@
 import { Editor } from "@tiptap/react";
-import { DragEvent, useCallback, useEffect, useRef } from "react";
+import { DragEvent, useCallback, useRef } from "react";
 import { NodeSelection } from "@tiptap/pm/state";
 import { Slice } from "@tiptap/pm/model";
 
-import { isTopBlockAtomNode } from "../../libs/node";
 import useDragInfo from "./hooks/useDragInfo";
+import useEvent from "./hooks/useEvent";
 
 class Dragging {
   constructor(
@@ -21,6 +21,8 @@ type Props = {
 export default function DragHandle({ editor }: Props) {
   const [dragInfo, dragInfoDispatch] = useDragInfo();
   const dragIconRef = useRef<HTMLDivElement>(null);
+
+  useEvent(editor, dragInfoDispatch, dragIconRef);
 
   const handleDragStart = useCallback(
     (ev: DragEvent) => {
@@ -39,50 +41,6 @@ export default function DragHandle({ editor }: Props) {
     },
     [editor, dragInfo]
   );
-
-  useEffect(() => {
-    const handleMouseMove = (ev: MouseEvent) => {
-      const pos = editor.view.posAtCoords({
-        left: ev.clientX,
-        top: ev.clientY,
-      });
-      if (!pos) return;
-
-      // リーフノードはNodeやDOMの取得方法が通常と異なるので、分けて処理する
-      if (isTopBlockAtomNode(editor, pos.pos)) {
-        dragInfoDispatch({
-          type: "set-atom-action",
-          editor: editor,
-          pos: pos,
-        });
-      } else {
-        dragInfoDispatch({
-          type: "set-block-action",
-          editor: editor,
-          pos: pos,
-        });
-      }
-    };
-
-    const handleMouseLeave = (ev: MouseEvent) => {
-      if (dragIconRef.current?.contains(ev.relatedTarget as HTMLElement)) {
-        return;
-      }
-      dragInfoDispatch({ type: "clear-action" });
-    };
-
-    const handleKeyDown = () => dragInfoDispatch({ type: "clear-action" });
-
-    editor.view.dom.addEventListener("mousemove", handleMouseMove);
-    editor.view.dom.addEventListener("mouseleave", handleMouseLeave);
-    editor.view.dom.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      editor.view.dom.removeEventListener("mousemove", handleMouseMove);
-      editor.view.dom.addEventListener("mouseleave", handleMouseLeave);
-      editor.view.dom.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [editor, dragInfoDispatch]);
 
   if (dragInfo === null) return null;
 

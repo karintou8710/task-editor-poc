@@ -17,7 +17,7 @@ type ClearAction = "clear-action";
 type SetAtomAction = "set-atom-action";
 type SetBlockAction = "set-block-action";
 
-type Action =
+export type DragInfoAction =
   | {
       type: ClearAction;
     }
@@ -32,9 +32,9 @@ type Action =
       pos: ProseMirrorPosition;
     };
 
-type State = DragInfo | null;
+export type DragInfoState = DragInfo | null;
 
-function reducer(state: State, action: Action): State {
+function reducer(state: DragInfoState, action: DragInfoAction): DragInfoState {
   if (action.type === "clear-action") {
     return null;
   } else if (action.type === "set-atom-action") {
