@@ -73,7 +73,6 @@ export default function TaskView({ node, updateAttributes }: NodeViewProps) {
               node.attrs.deadline &&
                 isTomorrow(node.attrs.deadline) &&
                 "text-orange-400",
-              node.attrs.deadline && isTowDaysAgo(node.attrs.deadline) && "",
               node.attrs.deadline &&
                 isBeforeDay(node.attrs.deadline) &&
                 "text-red-400"
