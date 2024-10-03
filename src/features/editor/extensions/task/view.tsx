@@ -38,19 +38,19 @@ export default function TaskView({
   };
 
   return (
-    <NodeViewWrapper className="my-2 pb-1 border-b">
-      <div className="flex">
+    <NodeViewWrapper className="my-2 border-b">
+      <div className="flex items-center">
         <label
           contentEditable="false"
           suppressContentEditableWarning
-          className="h-6 mr-4"
+          className="h-5 mr-4"
         >
           <button
             onClick={() => {
               editor.chain().focus(getPos()).run();
               deleteNode();
             }}
-            className="size-6 border border-black flex-[0_0_auto] hover:bg-gray-200"
+            className="size-5 border border-black flex-[0_0_auto] hover:bg-gray-200"
           />
         </label>
 
@@ -64,13 +64,13 @@ export default function TaskView({
       <div
         contentEditable="false"
         suppressContentEditableWarning
-        className="flex items-center mt-2 ml-9"
+        className="flex items-center ml-10"
       >
         <button
           onClick={() => ref.current?.showPicker()}
           className={twMerge(
             clsx(
-              "text-gray-600 text-xs font-bold flex gap-2 items-center",
+              "text-gray-600 font-bold flex gap-2 items-center",
               node.attrs.deadline == null && "text-gray-400",
               node.attrs.deadline &&
                 isToday(node.attrs.deadline) &&
@@ -84,8 +84,10 @@ export default function TaskView({
             )
           )}
         >
-          <BiCalendarEvent size={20} />
-          <span className="pt-0.5">{getDeadlineText(node.attrs.deadline)}</span>
+          <BiCalendarEvent size={15} />
+          <span className="text-xs pt-0.5">
+            {getDeadlineText(node.attrs.deadline)}
+          </span>
         </button>
 
         <input
