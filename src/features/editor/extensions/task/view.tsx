@@ -12,7 +12,13 @@ import {
 import { twMerge } from "tailwind-merge";
 import { BiCalendarEvent } from "react-icons/bi";
 
-export default function TaskView({ node, updateAttributes }: NodeViewProps) {
+export default function TaskView({
+  node,
+  updateAttributes,
+  deleteNode,
+  getPos,
+  editor,
+}: NodeViewProps) {
   const ref = useRef<HTMLInputElement>(null);
 
   const getDeadlineText = (deadline: string | null) => {
@@ -39,13 +45,12 @@ export default function TaskView({ node, updateAttributes }: NodeViewProps) {
           suppressContentEditableWarning
           className="h-6 mr-4"
         >
-          <input
-            type="checkbox"
-            onChange={(e) => {
-              updateAttributes({ checked: e.target.checked });
+          <button
+            onClick={() => {
+              editor.chain().focus(getPos()).run();
+              deleteNode();
             }}
-            checked={node.attrs.checked}
-            className="size-6 border border-black flex-[0_0_auto]"
+            className="size-6 border border-black flex-[0_0_auto] hover:bg-gray-200"
           />
         </label>
 
