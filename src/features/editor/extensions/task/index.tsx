@@ -59,6 +59,22 @@ const Task = Node.create({
     return ReactNodeViewRenderer(TaskView);
   },
 
+  addKeyboardShortcuts() {
+    return {
+      "Mod-d": ({ editor }) => {
+        const { selection } = editor.state;
+
+        if (!selection.empty || selection.$from.node().type.name !== this.name)
+          return false;
+
+        return editor.commands.deleteRange({
+          from: selection.$from.before(),
+          to: selection.$from.after(),
+        });
+      },
+    };
+  },
+
   addCommands() {
     return {
       deleteCheckedTask:
