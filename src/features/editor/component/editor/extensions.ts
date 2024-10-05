@@ -8,6 +8,8 @@ import ResetNode from "../../extensions/reset-node";
 import Placeholder from "@tiptap/extension-placeholder";
 import UniqueId from "../../extensions/unique-id";
 import Dropcursor from "@tiptap/extension-dropcursor";
+import Link from "@tiptap/extension-link";
+import LinkAtEnd from "../../extensions/link-at-end";
 
 export const extensions = [
   Document,
@@ -29,11 +31,15 @@ export const extensions = [
         return "タスクを入力してください";
       }
 
-      console.log(node.type.name);
-
       return "";
     },
   }),
   UniqueId,
   Dropcursor,
+  LinkAtEnd,
+  Link.configure({
+    openOnClick: true,
+    autolink: true,
+    defaultProtocol: "https",
+  }),
 ];

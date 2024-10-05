@@ -57,6 +57,11 @@
     pointer-events: none;
   }
 
+  a {
+    @apply text-blue-500;
+    cursor: pointer;
+  }
+
   .ProseMirror-selectednode {
     @apply outline outline-purple-500 outline-2 outline-offset-2;
   }
