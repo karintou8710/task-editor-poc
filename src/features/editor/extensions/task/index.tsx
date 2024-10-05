@@ -64,6 +64,20 @@ const Task = Node.create({
 
   addKeyboardShortcuts() {
     return {
+      Enter: ({ editor }) => {
+        const { selection } = editor.state;
+
+        if (
+          !selection.empty ||
+          selection.$from.node().type.name !== this.name ||
+          selection.from !== selection.$from.end()
+        )
+          return false;
+
+        return editor.commands.insertContentAt(selection.from + 1, {
+          type: this.name,
+        });
+      },
       "Mod-d": ({ editor }) => {
         const { selection } = editor.state;
 
