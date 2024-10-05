@@ -5,11 +5,14 @@ import {
   ReactNodeViewRenderer,
 } from "@tiptap/react";
 import TaskView from "./view";
+import { getTodayDate } from "../../libs/date";
 
 declare module "@tiptap/react" {
   interface Commands<ReturnType> {
-    heading: {
+    task: {
       deleteCheckedTask: () => ReturnType;
+      setTodayDeadline: () => ReturnType;
+      clearDeadline: () => ReturnType;
     };
   }
 }
@@ -72,11 +75,43 @@ const Task = Node.create({
           to: selection.$from.after(),
         });
       },
+      "Mod-e": ({ editor }) => {
+        const { selection } = editor.state;
+
+        if (!selection.empty || selection.$from.node().type.name !== this.name)
+          return false;
+
+        return editor.commands.setTodayDeadline();
+      },
+      "Mod-Shift-e": ({ editor }) => {
+        const { selection } = editor.state;
+
+        if (!selection.empty || selection.$from.node().type.name !== this.name)
+          return false;
+
+        return editor.commands.clearDeadline();
+      },
     };
   },
 
   addCommands() {
     return {
+      setTodayDeadline:
+        () =>
+        ({ commands }) => {
+          return commands.updateAttributes(this.name, {
+            deadline: getTodayDate(),
+          });
+        },
+
+      clearDeadline:
+        () =>
+        ({ commands }) => {
+          return commands.updateAttributes(this.name, {
+            deadline: null,
+          });
+        },
+
       deleteCheckedTask:
         () =>
         ({ commands, tr }) => {
