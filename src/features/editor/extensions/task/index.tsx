@@ -3,7 +3,6 @@ import {
   mergeAttributes,
   Node,
   ReactNodeViewRenderer,
-  textblockTypeInputRule,
 } from "@tiptap/react";
 import TaskView from "./view";
 
@@ -58,15 +57,6 @@ const Task = Node.create({
 
   addNodeView() {
     return ReactNodeViewRenderer(TaskView);
-  },
-
-  addInputRules() {
-    return [
-      textblockTypeInputRule({
-        find: /^\[$/,
-        type: this.type,
-      }),
-    ];
   },
 
   addCommands() {
